@@ -1,0 +1,1 @@
+nohup java -Xms40M -Xmx40M -Xss896k -XX:MetaspaceSize=50M -XX:MaxMetaspaceSize=50M -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=60 -XX:G1MaxNewSizePercent=72 -jar ./target/server-keepalive-java-1.0.0.jar --spring.profiles.active=prod &

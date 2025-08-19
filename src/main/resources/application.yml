@@ -1,0 +1,30 @@
+server:
+  port: 9003
+  shutdown: graceful
+
+logging:
+  config: classpath:log4j2-spring.xml
+  level:
+    root: info
+    sql: info
+    web: info
+
+spring:
+  threads:
+    virtual:
+      enabled: true
+
+---
+telegram:
+  botToken: telegram bot token
+  chatId: -100123
+  message:
+    period: 60
+    suffix: server break down
+
+config:
+  servers:
+    - name: server1
+      addr: http://127.0.0.1:8080/hello
+    - name: server2
+      addr: http://127.0.0.1:8081/hello
