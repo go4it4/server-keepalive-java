@@ -19,7 +19,7 @@ telegram:
   botToken: telegram bot token
   chatId: -100123
   message:
-    period: 60
+    period: 180
     suffix: server break down
 
 config:

@@ -14,7 +14,7 @@ public class MessageConfig {
     /**
      * message period: value of minute
      */
-    private Long period = 60L;
+    private Long period = 180L;
 
     /**
      * message suffix: serverName+suffix
