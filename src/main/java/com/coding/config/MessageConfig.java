@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class MessageConfig {
 
     /**
-     * message period: value of minute
+     * message period: value of seconds, default 180s
      */
     private Long period = 180L;
 

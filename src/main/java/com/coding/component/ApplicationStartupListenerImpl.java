@@ -36,9 +36,9 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<Appli
 
     private final MessageConfig messageConfig;
 
-    private final Map<String, CycleStack> serviceTimes = new ConcurrentHashMap<>();
+    private final Map<String, CycleStack> SERVICE_TIME = new ConcurrentHashMap<>();
 
-    private final Map<String, Long> errorTimes = new ConcurrentHashMap<>();
+    private final Map<String, Long> MSG_TIME = new ConcurrentHashMap<>();
 
     @Override
     public void onApplicationEvent(@NonNull ApplicationStartedEvent event) {
@@ -55,7 +55,7 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<Appli
 
     private void heartBeatReq(ServerList.KaServer server) {
         // logger.info("heartBeatReq: server name=[{}]", server.getName());
-        CycleStack cycleStack = serviceTimes.getOrDefault(server.getName(), new CycleStack(5));
+        CycleStack cycleStack = SERVICE_TIME.getOrDefault(server.getName(), new CycleStack(5));
         if (cycleStack.isFull()) {
             boolean keepalive = false;
             for (Long timestamp : cycleStack.getData()) {
@@ -67,12 +67,12 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<Appli
 
             // server break down
             if (!keepalive) {
-                Long errMsgTime = errorTimes.getOrDefault(server.getName(), 0L);
-                boolean sendNotify = errMsgTime <= 0 || System.currentTimeMillis() - errMsgTime >= messageConfig.getPeriod() * 60 * 1000;
+                Long errMsgTime = MSG_TIME.getOrDefault(server.getName(), 0L);
+                boolean sendNotify = errMsgTime <= 0 || System.currentTimeMillis() - errMsgTime >= messageConfig.getPeriod() * 1000;
                 if (sendNotify) {
                     logger.error("{}{}", server.getName(), messageConfig.getSuffix());
+                    MSG_TIME.put(server.getName(), System.currentTimeMillis());
                     TelegramUtil.sendOneTextMessage("*" + server.getName() + "*" + messageConfig.getSuffix());
-                    errorTimes.put(server.getName(), System.currentTimeMillis());
                 }
             }
         }
@@ -83,6 +83,6 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<Appli
         } else {
             cycleStack.push(0L);
         }
-        serviceTimes.put(server.getName(), cycleStack);
+        SERVICE_TIME.put(server.getName(), cycleStack);
     }
 }
