@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.6</version>
     </parent>
     <groupId>com.coding</groupId>
     <artifactId>server-keepalive-java</artifactId>
@@ -20,7 +20,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <telegram.bot.version>8.3.0</telegram.bot.version>
+        <telegram.bot.version>9.2.0</telegram.bot.version>
     </properties>
 
     <dependencies>
