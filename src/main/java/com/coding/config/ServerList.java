@@ -22,6 +22,8 @@ public class ServerList {
 
         private String name;
 
+        private Integer openFlag;
+
         private String addr;
     }
 }

@@ -34,6 +34,8 @@ message:
 config:
   servers:
     - name: server1
+      open-flag: 1
       addr: http://127.0.0.1:8080/hello
     - name: server2
+      open-flag: 0
       addr: http://127.0.0.1:8081/hello

@@ -51,8 +51,11 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
         }
 
         for (int i = 0; i < serverList.getServers().size(); i++) {
-            int finalI = i;
-            scheduledExecutor.scheduleAtFixedRate(() -> heartBeatReq(serverList.getServers().get(finalI)),
+            ServerList.KaServer kaServer = serverList.getServers().get(i);
+            if (!Integer.valueOf(1).equals(kaServer.getOpenFlag())) {
+                continue;
+            }
+            scheduledExecutor.scheduleAtFixedRate(() -> heartBeatReq(kaServer),
                     ((long) i * (PERIOD / serverList.getServers().size()) + 2), PERIOD, TimeUnit.SECONDS);
         }
     }
