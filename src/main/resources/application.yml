@@ -1,6 +1,6 @@
-server:
-  port: 9003
-  shutdown: graceful
+management:
+  server:
+    port: 9003
 
 logging:
   config: classpath:log4j2-spring.xml
@@ -12,16 +12,25 @@ logging:
 spring:
   threads:
     virtual:
-      enabled: true
+      enabled: false
 
 ---
-telegram:
-  botToken: telegram bot token
-  chatId: -100123
-  message:
-    period: 180
-    suffix: server break down
+message:
+  period: 180
+  suffix: server break down
+  channels:
+    - platform: telegram
+      open-flag: 1
+      app-id:
+      app-secret: telegram bot token
+      chat-id: "-100123"
+    - platform: lark
+      open-flag: 0
+      app-id: cli_xxx
+      app-secret: xxx
+      chat-id: ou_xxx
 
+---
 config:
   servers:
     - name: server1
