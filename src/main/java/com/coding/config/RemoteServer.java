@@ -11,8 +11,8 @@ import java.util.List;
 @Setter
 @Getter
 @Configuration
-@ConfigurationProperties(prefix = "config")
-public class ServerList {
+@ConfigurationProperties(prefix = "remote")
+public class RemoteServer {
 
     private List<KaServer> servers = new ArrayList<>();
 

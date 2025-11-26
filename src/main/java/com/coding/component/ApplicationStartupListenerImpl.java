@@ -1,7 +1,7 @@
 package com.coding.component;
 
 import com.coding.config.MessageConfig;
-import com.coding.config.ServerList;
+import com.coding.config.RemoteServer;
 import com.coding.model.CycleStack;
 import com.coding.model.MessageChannel;
 import com.coding.service.PlatformMessage;
@@ -34,7 +34,7 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
 
     private static final int PERIOD = 20;
 
-    private final ServerList serverList;
+    private final RemoteServer remoteServer;
 
     private final MessageConfig messageConfig;
 
@@ -46,21 +46,21 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
 
     @Override
     public void onApplicationEvent(@NonNull ApplicationStartedEvent event) {
-        if (serverList == null || serverList.getServers().isEmpty()) {
+        if (remoteServer == null || remoteServer.getServers().isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < serverList.getServers().size(); i++) {
-            ServerList.KaServer kaServer = serverList.getServers().get(i);
+        for (int i = 0; i < remoteServer.getServers().size(); i++) {
+            RemoteServer.KaServer kaServer = remoteServer.getServers().get(i);
             if (!Integer.valueOf(1).equals(kaServer.getOpenFlag())) {
                 continue;
             }
             scheduledExecutor.scheduleAtFixedRate(() -> heartBeatReq(kaServer),
-                    ((long) i * (PERIOD / serverList.getServers().size()) + 2), PERIOD, TimeUnit.SECONDS);
+                    ((long) i * (PERIOD / remoteServer.getServers().size()) + 2), PERIOD, TimeUnit.SECONDS);
         }
     }
 
-    private void heartBeatReq(ServerList.KaServer server) {
+    private void heartBeatReq(RemoteServer.KaServer server) {
         // logger.info("heartBeatReq: server name=[{}]", server.getName());
         int capacity = (int) (messageConfig.getPeriod() / PERIOD);
         CycleStack cycleStack = SERVICE_TIME.getOrDefault(server.getName(), new CycleStack(capacity));
