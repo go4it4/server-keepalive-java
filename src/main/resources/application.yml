@@ -36,6 +36,12 @@ remote:
     - name: server1
       open-flag: 1
       addr: http://127.0.0.1:8080/hello
+      period: 10000
+      timeout: 5000
+      fail-count: 5
     - name: server2
       open-flag: 0
       addr: http://127.0.0.1:8081/hello
+      period: 5000
+      timeout: 3000
+      fail-count: 5

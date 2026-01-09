@@ -25,5 +25,20 @@ public class RemoteServer {
         private Integer openFlag;
 
         private String addr;
+
+        /**
+         * millis, default 10000
+         */
+        private Long period = 10000L;
+
+        /**
+         * millis, default 5000
+         */
+        private Long timeout = 5000L;
+
+        /**
+         * fail count, default 5
+         */
+        private Integer failCount = 5;
     }
 }

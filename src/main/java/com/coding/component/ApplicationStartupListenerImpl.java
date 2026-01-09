@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,8 +32,6 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
 
     private final ScheduledThreadPoolExecutor scheduledExecutor = ThreadUtil.newScheduledExecutor(
             1, 2, new KeepaliveThreadFactory());
-
-    private static final int PERIOD = 20;
 
     private final RemoteServer remoteServer;
 
@@ -50,20 +49,20 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
             return;
         }
 
-        for (int i = 0; i < remoteServer.getServers().size(); i++) {
-            RemoteServer.KaServer kaServer = remoteServer.getServers().get(i);
-            if (!Integer.valueOf(1).equals(kaServer.getOpenFlag())) {
-                continue;
-            }
+        List<RemoteServer.KaServer> servers = remoteServer.getServers().stream()
+                .filter(i -> Integer.valueOf(1).equals(i.getOpenFlag())).toList();
+
+        for (int i = 0; i < servers.size(); i++) {
+            RemoteServer.KaServer kaServer = servers.get(i);
             scheduledExecutor.scheduleAtFixedRate(() -> heartBeatReq(kaServer),
-                    ((long) i * (PERIOD / remoteServer.getServers().size()) + 2), PERIOD, TimeUnit.SECONDS);
+                    ((long) i * (10000 / servers.size()) + 2000),
+                    kaServer.getPeriod(), TimeUnit.MILLISECONDS);
         }
     }
 
     private void heartBeatReq(RemoteServer.KaServer server) {
         // logger.info("heartBeatReq: server name=[{}]", server.getName());
-        int capacity = (int) (messageConfig.getPeriod() / PERIOD);
-        CycleStack cycleStack = SERVICE_TIME.getOrDefault(server.getName(), new CycleStack(capacity));
+        CycleStack cycleStack = SERVICE_TIME.getOrDefault(server.getName(), new CycleStack(server.getFailCount()));
         if (cycleStack.isFull()) {
             boolean keepalive = false;
             for (Long timestamp : cycleStack.getData()) {
@@ -86,8 +85,10 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
             }
         }
 
-        int code = HttpClientUtil.requestGetStatusCode(server.getAddr());
-        if (code == 200) {
+        long timeout = server.getTimeout() == null ? 5000 : server.getTimeout();
+        Integer code = ThreadUtil.executeTimeout(() ->
+                HttpClientUtil.requestGetStatusCode(server.getAddr()), Duration.ofMillis(timeout));
+        if (code != null && code == 200) {
             cycleStack.push(System.currentTimeMillis());
         } else {
             cycleStack.push(0L);
