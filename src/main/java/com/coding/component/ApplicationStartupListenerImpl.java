@@ -77,7 +77,7 @@ public class ApplicationStartupListenerImpl implements ApplicationListener<@NonN
                 Long errMsgTime = MSG_TIME.getOrDefault(server.getName(), 0L);
                 boolean sendNotify = errMsgTime <= 0 || System.currentTimeMillis() - errMsgTime >= messageConfig.getPeriod() * 1000;
                 if (sendNotify) {
-                    logger.error("{}{}", server.getName(), messageConfig.getSuffix());
+                    logger.error("{} {}", server.getName(), messageConfig.getSuffix());
                     MSG_TIME.put(server.getName(), System.currentTimeMillis());
                     String content = "*" + server.getName() + "* " + messageConfig.getSuffix();
                     sendMessage(content);
